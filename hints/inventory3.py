@@ -54,40 +54,39 @@ class Container:
     def __contains__(self, item):
         return item in self._items
 
-    def loot(self, container):
-        # YOUR CODE HERE
-        pass
+    def best_weapon(self):
+        # Iterating over the items we have
+        for item in self._items:
+            # if item is a weapon:
+            #     if item is better than best_candidate:
+            #         pick it
+            pass
+        # return best_candidate
 
 
-hoard = Container("Dragon's hoard", 1000)
-hoard.add(Item("Rusty bucket", 0.1, 1))
-hoard.add(Item("Large diamond", 1000, 0.1))
-hoard.add(Item("Huge gold nugget", 10000, 100))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Ornate statue", 700, 40))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of strength", 300, 0.4))
+class Weapon(Item):
+    def __init__(self, name, price, weight, dps):
+        super().__init__(name, price, weight)
+        self.dps = dps
+
+    def __str__(self):
+        return super().__str__() + f" {{{self.dps} DPS}}"
+
+
+sword = Weapon("Broadsword", 50, 5, 10)
+print(sword)
 
 inventory = Container("Player inventory", 50)
-inventory.loot(hoard)
+
+inventory.add(sword)
+inventory.add(Weapon("Bow", 20, 4, 8))
+inventory.add(Weapon("Battle axe", 70, 10, 15))
 
 print(inventory)
 for item in inventory:
-    print(f"> {item}")
-print(f"Total looted value: {inventory.items_price()} gold")
-# Can you get this over 6000?
+    print(item)
+
+print(inventory.best_weapon())  # Should be the item for Battle axe
+
+chest = Container("Treasure chest", 30)
+print(chest.best_weapon())  # Should print None

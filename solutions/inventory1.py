@@ -8,6 +8,10 @@ class Item:
         return f"{self.name} ({self.price} gold) [{self.weight} kg]"
 
 
+potion = Item("Potion of healing", 100, 0.2)
+print(potion)
+
+
 class Container:
     def __init__(self, name, weight_limit):
         self.name = name
@@ -34,16 +38,18 @@ class Container:
             raise RuntimeError(f"Can't add {item} to {self}: over weight limit")
 
     def remove(self, item):
-        self._items.remove(item)
-        return item
+        # Should remove Item "item" from the Container "self" and return it
+        # Raise an error if it's not in the Container
+
+        self._items.remove(item)  # Will raise a KeyError if the item is not found
+        return item  # If we need to return something, it's "item"
 
     def clear(self):
+        # Should remove all Items from the Container "self" and return them in any iterable
+
         items = list(self._items)
         self._items.clear()
         return items
-
-    def __str__(self):
-        return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"
 
     def __iter__(self):
         return self._items.__iter__()
@@ -54,40 +60,22 @@ class Container:
     def __contains__(self, item):
         return item in self._items
 
-    def best_weapon(self):
-        best_candidate = None
-        for item in self._items:
-            if isinstance(item, Weapon):
-                if best_candidate is None:
-                    best_candidate = item
-                elif best_candidate.dps < item.dps:
-                    best_candidate = item
-        return best_candidate
-
-
-class Weapon(Item):
-    def __init__(self, name, price, weight, dps):
-        super().__init__(name, price, weight)
-        self.dps = dps
-
     def __str__(self):
-        return super().__str__() + f" {{{self.dps} DPS}}"
+        return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"
 
-
-sword = Weapon("Broadsword", 50, 5, 10)
-print(sword)
 
 inventory = Container("Player inventory", 50)
-
-inventory.add(sword)
-inventory.add(Weapon("Bow", 20, 4, 8))
-inventory.add(Weapon("Battle axe", 70, 10, 15))
-
+inventory.add(potion)
 print(inventory)
-for item in inventory:
+
+inventory.add(Item("Plate armor", 300, 20))
+inventory.add(Item("Large diamond", 1000, 0.1))
+
+# Should output item for "Potion of healing"
+print(inventory.remove(potion))
+# Should output items for "Plate armor" and "Large diamond"
+for item in inventory.clear():
     print(item)
 
-print(inventory.best_weapon())  # Should be the item for Battle axe
-
-chest = Container("Treasure chest", 30)
-print(chest.best_weapon())  # Should print None
+# Should raise an exception
+print(inventory.remove(potion))

@@ -20,7 +20,7 @@ Exercises: https://scits.math.unibe.ch/ddip/exercises.zip
 
 Repoistory: https://github.com/scits-bern/ddip
 
-v.1.0 (2020-06-09)
+v.1.1 (2020-06-11)
 
 ---
 
@@ -216,6 +216,8 @@ but in CPython implementation it returns the memory location of the object.
 
 # The mystery of small integers
 
+TODO Fix
+
 .exercise[
   We saw that assigning the "same" list literal to two variables
     produces different objects:
@@ -397,7 +399,7 @@ x.imag # 4.0 (a property of x)
 
 An attribute that's a function is called a _method:_
 
-```
+```py
 x.conjugate() # 3.0 - 4.0j (a method on x)
 ```
 
@@ -485,8 +487,8 @@ Once that definition executes, we can already create instaces of this class
 
 ```py
 something = Thing()
-print(thing)       # Outputs <__main__.Thing object at 0x000001DB6B754760>
-print(type(thing)) # Outputs <class '__main__.Thing'>
+print(something)       # Outputs <__main__.Thing object at 0x000001DB6B754760>
+print(type(something)) # Outputs <class '__main__.Thing'>
 ```
 
 ---
@@ -609,7 +611,7 @@ g.hello("everyone")
 
 ## Checking for attributes
 
-Instead of using a `try..catch` block, we could more gracefully test
+Instead of using a `try..except` block, we could more gracefully test
 if an attribute exists.
 
 `hasattr(object, name)` checks if the object `object` has an attribute
@@ -632,7 +634,7 @@ print(s.upper())           # A STRING
 ## Always having data
 
 This code is inconvenient if we always expect to know our name, and
-  uses a `try..catch` block, which doesn't look very clean.
+  uses a `try..except` block, which doesn't look very clean.
 
 Let's require a name to be provided when a Greeter is created. For this,
   we need a special method called `__init__`.
@@ -642,7 +644,7 @@ This is analogous to constructor methods in other languages.
 ```py
 class Greeter:
     def __init__(self, name):
-      self.name = name
+        self.name = name
 
     def hello(self, target="World"):
         print(f"Hello, {target}!")
@@ -762,6 +764,9 @@ This will raise an exception if the Greeter class is just being defined,
   because at the time of parsing it it's not yet defined, and function
   parameter defaults are evaluated at parse time.
 
+Even if it was possible, it's not a good idea to assign a value that can change
+  as a function default.
+
 ---
 
 ## Parameter defaults gotchas
@@ -787,6 +792,9 @@ def f(l=[]):
 print(f()) # Outputs ["Test"]
 print(f()) # Outputs ["Test", "Test"]
 ```
+
+The common pattern for dealing with this problem is to assign `None`
+  as default and replaces it within the function.
 
 ---
 
@@ -859,7 +867,7 @@ Let's make an inventory system for a computer game.
 
 We have Item objects, which have a name, a price, and a weight.
 
-Item objects can be put in Contaners (like a player inventory or a chest),
+Item objects can be put in Containers (like a player inventory or a chest),
   which have a name and a weight limit.
 
 We already have an idea how to make an Item:
@@ -894,10 +902,10 @@ class Container:
         self._items = set()
 
     def items_weight(self):
-        return sum(item.weight for item in self.items)
+        return sum(item.weight for item in self._items)
 
     def items_price(self):
-        return sum(item.price for item in self.items)
+        return sum(item.price for item in self._items)
     
     def __str__(self):
         return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"
@@ -961,7 +969,7 @@ class Container:
 
     def add(self, item):
         if item in self._items:
-            pass
+            return  # Do nothing
         if self.can_add(item):
             self._items.add(item)
         else:
@@ -1016,6 +1024,8 @@ We need a method `__iter__` that returns an iterator object. We can use the iter
 
   This requires adding the `__len__` and `__contains__` methods.
 ]
+
+Homework exercise:
 
 .exercise[
   Implement `inventory.loot(container)` method that takes items from the container
@@ -1168,7 +1178,7 @@ p.full_name = "Superman" # ValueError
 .exercise[
   Implement a class `PortableContainer` that is both an Item and a Container.
 
-  Replace the `weight` and `value` properties with getters that calculate
+  Replace the `weight` and `price` properties with getters that calculate
     total weight and value of the container and its contents.
 
   The constructor is already provided for you.
@@ -1284,11 +1294,12 @@ def append_zero_all(l):
     new_l = l.copy()
     for sublist in new_l:
         sublist.append(0)
+    return new_l
 
 l = [[1], []]
 new_l = append_zero_all(l)
-print(new_l) # Outputs [[1, 0]. [0]]
-print(l)     # Outputs [[1, 0]. [0]] ???
+print(new_l) # Outputs [[1, 0], [0]]
+print(l)     # Outputs [[1, 0], [0]] ???
 ```
 
 `l.copy()` performs a _shallow_ copy of a list; a new list is created with
@@ -1301,7 +1312,6 @@ print(l)     # Outputs [[1, 0]. [0]] ???
 
 To create a "proper" copy of an object with references to potentially mutable objects,
   you need a recursive "deep" copy.
-
 Thankfully, the standard library provides tools for this:
 
 ```py
@@ -1310,11 +1320,12 @@ def append_zero_all(l):
     new_l = deepcopy(l)
     for sublist in new_l:
         sublist.append(0)
+    return(new_l)
 
 l = [[1], []]
 new_l = append_zero_all(l)
-print(new_l) # Outputs [[1, 0]. [0]]
-print(l)    # Outputs [[1]. []]
+print(new_l) # Outputs [[1, 0], [0]]
+print(l)    # Outputs [[1], []]
 ```
 
 .exercise[
@@ -1330,7 +1341,7 @@ print(l)    # Outputs [[1]. []]
 
 As mentioned, Python treats functions as values; so they can be passed to other functions.
 
-Functions that accept functions as parameters are called _high-order functions._
+Functions that accept functions as parameters are called _higher-order functions._
 
 ```py
 def run_twice(f):
@@ -1360,7 +1371,7 @@ def f(acc, val):
 def g(word):
     return word.capitalize()
 
-print(reduce(g, map(f, l))
+print(reduce(f, map(g, l))
 # Outputs "The Quick Brown Fox Jumps Over The Lazy Dog"
 ```
 
@@ -1368,7 +1379,7 @@ print(reduce(g, map(f, l))
 
 ## Generators and lazy evaluation
 
-If you use `map()`, you may notice that it returns something other than
+If you use `map()`, you may notice that it returns something other than `list`
 
 ```py
 squares = map(lambda x: x**2, [1, 2, 3, 4])
@@ -1668,6 +1679,7 @@ from baz import quux, quuz
 
 from monty import spam as ham
 # Global object spam from monty.py is now available under the name ham
+import foo as bar
 ```
 
 Besides those 3, there's a another mechanism called _star-import:_

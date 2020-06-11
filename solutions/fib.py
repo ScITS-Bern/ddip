@@ -10,12 +10,17 @@ def debug(f):
 
 
 def memoize(f):
+    cache = {}  # Keys: n, values: f(n)
+
     @wraps(f)
     def memoize_wrapper(n):
-        # Should check if result of f(n) is already computed
-        # If not, compute, store and return
-        # If yes, return stored
-        return f(n)
+        if n in cache:
+            return cache[n]
+        else:
+            answer = f(n)
+            cache[n] = answer
+            return answer
+
     return memoize_wrapper
 
 
@@ -41,3 +46,5 @@ print(f"f(6) is {fib(6)}")  # Logs 25 calls
 print(f"f(6) is {memo_fib(6)}")  # Should log only 7 calls
 
 print(f"f(5) is {memo_fib(5)}")  # Should log no calls: already calculated
+
+print(f"f(600) is {memo_fib(600)}")

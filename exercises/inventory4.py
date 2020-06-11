@@ -27,7 +27,7 @@ class Container:
 
     def add(self, item):
         if item in self._items:
-            pass
+            return
         if self.can_add(item):
             self._items.add(item)
         else:
@@ -63,12 +63,12 @@ class PortableContainer(Item, Container):
 
     @property
     def price(self):
-        # YOUR CODE HERE
+        # This code should return the total of the own price of the PortableContainer and all of its contents
         pass
 
     @property
     def weight(self):
-        # YOUR CODE HERE
+        # This code should return the total of the own weight of the PortableContainer and all of its contents
         pass
 
 
@@ -79,5 +79,6 @@ bag.add(Item("Mythril chainmail", 600, 10))
 inventory.add(bag)
 
 print(inventory)
+print("Inside:")
 for item in inventory:
     print(item)

@@ -1,10 +1,9 @@
 class Greeter:
     def hello(self, target="World"):
         print(f"Hello, {target}!")
-        # Rewrite this to use hasattr() instead of try..except
-        try:
+        if hasattr(self, "name"):
             print(f"My name is {self.name}.")
-        except AttributeError:
+        else:
             print("I don't know my name yet.")
 
 

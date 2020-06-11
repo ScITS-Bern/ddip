@@ -2,6 +2,6 @@ def spamalot():
     print("SPAM " * 100)
 
 
-if __name__ == "__main__":
+# if running as the main script:
     print("I will now spam a lot!")
     spamalot()

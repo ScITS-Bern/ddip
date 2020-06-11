@@ -3,7 +3,9 @@ class Greeter:
         print(f"Hello, {target}!")
         # Rewrite this to use hasattr() instead of try..except
         try:
+        # if Greeter "self" has an attribute called "name":
             print(f"My name is {self.name}.")
+        # else:
         except AttributeError:
             print("I don't know my name yet.")
 

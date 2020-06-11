@@ -10,11 +10,22 @@ def debug(f):
 
 
 def memoize(f):
+    cache = {}  # Some sort of data structure to store cached results.
+    # A dict works well, mapping { n: f(n) }
+
     @wraps(f)
     def memoize_wrapper(n):
         # Should check if result of f(n) is already computed
         # If not, compute, store and return
         # If yes, return stored
+
+        # if n is in cache's keys:
+        #     return cache[n]
+        # else:
+        #     compute f(n)
+        #     store in cache[n]
+        #     return it
+
         return f(n)
     return memoize_wrapper
 

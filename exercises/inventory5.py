@@ -26,9 +26,10 @@ class Container:
         return self.items_weight() + item.weight <= self.weight_limit
 
     def add(self, item):
-        # CHANGE CODE HERE
+        # Should return a new Container that has the item added, everything else the same
+        # Do not modify self
         if item in self._items:
-            pass
+            return
         if self.can_add(item):
             self._items.add(item)
         else:
@@ -59,5 +60,5 @@ class Container:
 inventory = Container("Player inventory", 50)
 new_inventory = inventory.add(Item("Golden crown", 500, 4))
 
-assert len(new_inventory) == 2
-assert len(inventory) == 1
+assert len(new_inventory) == 1
+assert len(inventory) == 0

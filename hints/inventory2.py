@@ -55,8 +55,17 @@ class Container:
         return item in self._items
 
     def loot(self, container):
-        # YOUR CODE HERE
-        pass
+        # You have a Container "container" to find items from
+        # Naive implementation would be trying every item and taking them if they still fit:
+        for item in list(container):  # Using list(container) to get a copy of all items, because we'll be changing the container during iteration
+            if self.can_add(item):
+                container.remove(item)
+                self.add(item)
+        # However, this can fill your "self" container with worthless junk before pricy stuff can be added
+        # Generally, this problem is known as the 0-1 knapsack problem: https://en.wikipedia.org/wiki/Knapsack_problem
+        # There are many possible approaches of different complexity. A simpler one would be to sort items by something before trying to add them.
+        # Using the sorted() function on "container" with appropriate key function and/or reverse flag will do that.
+        # Documentation: https://docs.python.org/3/library/functions.html#sorted
 
 
 hoard = Container("Dragon's hoard", 1000)

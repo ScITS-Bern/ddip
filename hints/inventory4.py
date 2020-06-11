@@ -54,40 +54,32 @@ class Container:
     def __contains__(self, item):
         return item in self._items
 
-    def loot(self, container):
-        # YOUR CODE HERE
+
+class PortableContainer(Item, Container):
+    def __init__(self, name, price, weight, weight_limit):
+        Container.__init__(self, name, weight_limit)
+        self.own_price = price  # This is where we store own price/weight
+        self.own_weight = weight
+
+    @property
+    def price(self):
+        # This code should return the total of the own weight of the PortableContainer and all of its contents
+        # Reminder: self is also a Container, so you can use Container methods methods for getting contents' totals
+        pass
+
+    @property
+    def weight(self):
+        # This code should return the total of the own weight of the PortableContainer and all of its contents
         pass
 
 
-hoard = Container("Dragon's hoard", 1000)
-hoard.add(Item("Rusty bucket", 0.1, 1))
-hoard.add(Item("Large diamond", 1000, 0.1))
-hoard.add(Item("Huge gold nugget", 10000, 100))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Ornate statue", 700, 40))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of strength", 300, 0.4))
-
 inventory = Container("Player inventory", 50)
-inventory.loot(hoard)
+inventory.add(Item("Plate armor", 300, 25))
+bag = PortableContainer("Bag", 1, 0.5, 15)
+bag.add(Item("Mythril chainmail", 600, 10))
+inventory.add(bag)
 
 print(inventory)
+print("Inside:")
 for item in inventory:
-    print(f"> {item}")
-print(f"Total looted value: {inventory.items_price()} gold")
-# Can you get this over 6000?
+    print(item)

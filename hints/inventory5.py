@@ -26,10 +26,18 @@ class Container:
         return self.items_weight() + item.weight <= self.weight_limit
 
     def add(self, item):
+        # Should return a new Container that has the item added, everything else the same
+        # Do not modify self
+
+        # You need a new_container, that has the same items and other properties
+        # Make a new one then add all items to it
+
         if item in self._items:
+            # Nothing to add: return new Container as-is
             return
         if self.can_add(item):
-            self._items.add(item)
+            # Add to new container then return
+            return
         else:
             raise RuntimeError(f"Can't add {item} to {self}: over weight limit")
 
@@ -54,40 +62,9 @@ class Container:
     def __contains__(self, item):
         return item in self._items
 
-    def loot(self, container):
-        # YOUR CODE HERE
-        pass
-
-
-hoard = Container("Dragon's hoard", 1000)
-hoard.add(Item("Rusty bucket", 0.1, 1))
-hoard.add(Item("Large diamond", 1000, 0.1))
-hoard.add(Item("Huge gold nugget", 10000, 100))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Plate armor", 300, 25))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Mythril chainmail", 600, 10))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Golden crown", 500, 4))
-hoard.add(Item("Ornate statue", 700, 40))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of healing", 100, 0.2))
-hoard.add(Item("Potion of strength", 300, 0.4))
 
 inventory = Container("Player inventory", 50)
-inventory.loot(hoard)
+new_inventory = inventory.add(Item("Golden crown", 500, 4))
 
-print(inventory)
-for item in inventory:
-    print(f"> {item}")
-print(f"Total looted value: {inventory.items_price()} gold")
-# Can you get this over 6000?
+assert len(new_inventory) == 1
+assert len(inventory) == 0

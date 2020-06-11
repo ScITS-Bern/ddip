@@ -55,8 +55,12 @@ class Container:
         return item in self._items
 
     def loot(self, container):
-        # YOUR CODE HERE
-        pass
+        # This is just one, non-optimal solution that's better than the naive one in the hints - sorting by price-per-kilo.
+        # I really encourage you to experiment and/or read up on the knapsack problem to truly optimize it.
+        for item in sorted(container, key=lambda item: item.price / item.weight, reverse=True):
+            if self.can_add(item):
+                container.remove(item)
+                self.add(item)
 
 
 hoard = Container("Dragon's hoard", 1000)

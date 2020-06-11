@@ -40,10 +40,28 @@ class Container:
     def remove(self, item):
         # Should remove Item "item" from the Container "self" and return it
         # Raise an error if it's not in the Container
-        pass
+
+        # The items are stored in a set "self._items" - see the set() documentation for appropriate methods to use
+        # https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
+
+        return item  # If we need to return something, it's "item"
 
     def clear(self):
         # Should remove all Items from the Container "self" and return them in any iterable
+
+        # The items are stored in a set "self._items" - see the set() documentation for an appropriate method to use
+        # https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
+        pass
+
+    def __iter__(self):
+        return self._items.__iter__()
+
+    def __len__(self):
+        # Implement "len(self)" by using "len(self._items)"
+        pass
+
+    def __contains__(self, item):
+        # Implement "x in self" by using "x in self._items"
         pass
 
     def __str__(self):
