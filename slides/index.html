@@ -20,7 +20,7 @@ Exercises: https://scits.math.unibe.ch/ddip/exercises.zip
 
 Repoistory: https://github.com/scits-bern/ddip
 
-v.1.1 (2020-06-11)
+v.1.2 (2020-09-08)
 
 ---
 
@@ -57,17 +57,8 @@ This course is aimed at people who either:
 3. Have survived the "Introduction to Python" course
   yesterday and understood it well enough.
 
----
-
-## What else to expect?
-
-* This course is new. The material is still "raw" and may run out
-  before the time is up.
-
-* Running this course online with Zoom and Live Share is experimental.
-
-* I'm not a Python guru. I won't be able to answer all questions
-  about Python without searching the docs.
+Please note that I'm not a Python guru. I won't be able to answer all questions
+about Python without searching the docs or guarantee that my code is "pythonic".
 
 ---
 
@@ -154,14 +145,6 @@ Alternatively, use a code editor that has integrated functionality to run Python
 
 class: center, middle
 
-## Setting up VSC Live Share
-
-### Follow live instructions
-
----
-
-class: center, middle
-
 # Objects and scope
 
 ---
@@ -214,9 +197,7 @@ but in CPython implementation it returns the memory location of the object.
 
 ---
 
-# The mystery of small integers
-
-TODO Fix
+# The mystery of (small) integers
 
 .exercise[
   We saw that assigning the "same" list literal to two variables
@@ -228,9 +209,11 @@ TODO Fix
   print(a is b) # Outputs False
   ```
 
-  Repeat this experiment with a large number (e.g. 10000) and a small number (e.g. 5)
+  Repeat this experiment with a large number (e.g. 10000) and a small number (e.g. 5).
 
-  Can you guess why the result differs?
+  Repeat it again in an interactive Python session (call Python without a script to execute).
+
+  Can you guess why the results differ?
 ]
 
 ---
@@ -693,7 +676,7 @@ Such names are surrounded by double underscores,
   hence _"dunder",_ or simply _"magic"._
 
 You should not create your own new names of this format, because a later version of
-  Python can add more meaningful magic names. Only add (override) those you know
+  Python can add more reserved magic names. Only add (override) those you know
   the function of.
 
 ---
@@ -786,8 +769,8 @@ A more devious example:
 
 ```
 def f(l=[]):
-  l.append("Test")
-  return l
+    l.append("Test")
+    return l
 
 print(f()) # Outputs ["Test"]
 print(f()) # Outputs ["Test", "Test"]
@@ -806,7 +789,7 @@ class Greeter:
     # ..rest of the code..
     def hello(self, target=None):
         if target is None:
-          target = self.default
+            target = self.default
         print(f"Hello, {target}!")
         print(f"My name is {self.name}.")
 ```
