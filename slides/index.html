@@ -20,7 +20,7 @@ Exercises: https://scits.math.unibe.ch/ddip/exercises.zip
 
 Repoistory: https://github.com/scits-bern/ddip
 
-v.1.2 (2020-09-08)
+v.1.3 (2021-01-19)
 
 ---
 
@@ -236,15 +236,26 @@ import sys
 type(sys)                  # module
 ```
 
-User-created classes provide a way to create new types; we'll get to them soon.
+User-created _classes_ provide a way to create new types; we'll get to them soon.
 
 ---
 
 ## Object value
 
-An object's "value" is somehow abstract and can differ from type to type.
+An object's "value" is an abstract concept and can differ from type to type.
 
 Informally, it's all the data attached to the object.
+
+--
+
+In case of a primitive object, its value is obvious, e.g. an `int`'s value
+    is the number it represents.
+
+For a different example, for a list `["a", 1]` one could consider the two objects,
+    in their order, to be the value.
+
+
+--
 
 Object values may change throughout the lifetime of an object,
   unlike identity and type.
@@ -351,7 +362,8 @@ If you only read a variable in a function, it will be searched
   in all scopes. You don't need to declare a variable `global`
   in a function for it to read a global variable.
 
-However, if at any point in a function a variable is assigned to,
+However, if at any point in a function a variable is assigned to
+  (including augmented assignment like `x += 1`),
   it defaults to being local.
 
 ```py
@@ -432,6 +444,8 @@ A Class is essentially a blueprint of what kind of data needs
 
 An object of such type is called a class _instance,_ and has its
   own unique set of data (properties) associated with it.
+
+Classes are a way to have objects that have a defined interface
 
 Code using a class gets a user-defined interface to interact
   with it, while internal details are not important.
@@ -681,7 +695,7 @@ You should not create your own new names of this format, because a later version
 
 ---
 
-## Get (re)presentable
+## Magic method example: get (re)presentable
 
 If we try to print out our new object, it's still looks ugly.
 
@@ -811,7 +825,7 @@ Shouldn't our change affect all instances?
 
 ## Modifying class variables
 
-`Greeter.default` is a class variable, but when we try to modify it
+`Greeter.default` is a class variable, but when we try to assign it
   on an instance, we actually create an instance variable that overrides it.
 
 This behavior can actually be useful, especially for providing defaults,
@@ -848,9 +862,9 @@ g2.hello() # Outputs "Hello, class! My name is Jane."
 
 Let's make an inventory system for a computer game.
 
-We have Item objects, which have a name, a price, and a weight.
+We have Item objects, which have three attributes: a name, a price, and a weight.
 
-Item objects can be put in Containers (like a player inventory or a chest),
+Item objects can be put in Containers (like a player inventory or a treasure chest),
   which have a name and a weight limit.
 
 We already have an idea how to make an Item:
@@ -872,29 +886,52 @@ print(potion)
 
 ---
 
+## Specifying Containers
+
+What do we want from our containers?
+
+* We need to be able to add and remove objects from a container.
+
+* A container can have multiple copies of an object in it.
+
+* A container should not allow adding items over its weight limit.
+
+* We don't care about the order in which we placed items in a container.
+
+* We should be able to query the total weight, total value, and count of items
+  in a container.
+
+* We should be able to iterate through items in a container.
+
+---
+
 ## Container class
 
-We need to keep track of multiple Item objects inside a Container.
-  Let's use a [`set`](https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset) and start writing:
+We need to keep track of multiple Item objects (and multiple copies) inside a Container.
+  Let's use a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict)
+  to store counts and start writing:
 
 ```py
 class Container:
     def __init__(self, name, weight_limit):
         self.name = name
         self.weight_limit = weight_limit
-        self._items = set()
+        self._counts = {}  # A dict that maps an Item to its count inside 
+
+    def count(self, item):
+        return self._counts.get(item, 0)  # Returns 0 if item is not in dict
 
     def items_weight(self):
-        return sum(item.weight for item in self._items)
+        return sum(item.weight * self.count(item) for item in self._counts)
 
     def items_price(self):
-        return sum(item.price for item in self._items)
+        return sum(item.price * self.count(item) for item in self._counts)
     
     def __str__(self):
         return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"
 
 inventory = Container("Player inventory", 50)
-print(inventory) # "Player inventory [0/50 kg]"
+print(inventory)  # "Player inventory [0/50 kg]"
 ```
 
 ---
@@ -902,7 +939,7 @@ print(inventory) # "Player inventory [0/50 kg]"
 ## Implementation details
 
 We could already start populating the Container by directly accessing
-  `._items`, but this has 2 problems:
+  `._counts`, but this has 2 problems:
 
 1. This does not guarantee that weight limit is checked.
 
@@ -910,7 +947,13 @@ We could already start populating the Container by directly accessing
   that's subject to change.
 
 So the class should provide its own methods for adding / removing items,
-  and `._items` should not directly be used.
+  and `._counts` should not directly be used.
+
+```py
+potion = Item("Potion of healing", 100, 0.2)
+inventory._counts[potion] = 1 # BAD: uses implementation details
+inventory.add(potion)         # Good, but we still have to write this method!
+```
 
 ---
 
@@ -951,10 +994,9 @@ class Container:
         return self.items_weight() + item.weight <= self.weight_limit
 
     def add(self, item):
-        if item in self._items:
-            return  # Do nothing
         if self.can_add(item):
-            self._items.add(item)
+            old_count = self._counts.get(item, 0)
+            self._counts[item] = old_count + 1
         else:
             raise RuntimeError(
                 f"Can't add {item} to {self}: over weight limit"
@@ -968,10 +1010,11 @@ Note the use of `isinstance(object, class)` to check whether we're trying to add
 ## Implementing the container
 
 .exercise[
-  Implement the `remove(item)` and `clear()` methods.
+  Implement a method `.remove(item)`
 
-  They should call the corresponding `set` methods, but also return what was removed
-    (`list` or another iterable of items in case of `clear()`)
+  `.remove(item)` should remove the specified item from the container, and return it.
+  
+  Raise an error (`KeyError`) if it's not in the container.
 
   Base code is in `exercises/inventory1.py`.
 ]
@@ -991,11 +1034,28 @@ How to implement this functionality? The standard Python answer is "magic method
 
 Documentation: [Special Method Names](https://docs.python.org/3/reference/datamodel.html#special-method-names)
 
-We need a method `__iter__` that returns an iterator object. We can use the iterator of `_item` for that:
+Searching for "iterate", we find that we need a method `__iter__`
+  that returns an [iterator object](https://docs.python.org/3/library/stdtypes.html#typeiter).
+
+---
+
+## Iterating with a generator
+
+The most intuitive way to provide an iterator is to have a generator.
+
+A generator can be thought of as a function that can "return" multiple times,
+  pausing between calls. This is done with a `yield` keyword.
+
+--
+
+Let's loop over the items in `_counts`, yielding the item as many times
+  as the count of that object:
 
 ```py
     def __iter__(self):
-        return self._items.__iter__()
+        for item in self._counts:
+            for i in range(self.count(item)):
+                yield item
 ```
 
 ---
@@ -1003,21 +1063,27 @@ We need a method `__iter__` that returns an iterator object. We can use the iter
 ## Implementing other things
 
 .exercise[
-  Continuing from `inventory1.py`, implement `len(container)` and `x in container` operations.
+  Implement `len(container)` and `x in container` operations.
 
   This requires adding the `__len__` and `__contains__` methods.
+
+  Base code is in `exercises/inventory2.py`.
 ]
 
-Homework exercise:
+---
+
+## Homework exercise
 
 .exercise[
-  Implement `inventory.loot(container)` method that takes items from the container
+  Implement `inventory.loot(treasure)` method that takes items from the treasure container
     into the inventory container.
   
   Note that the inventory may not be big enough to fit all items;
     your algorithm should try to optimize which items are taken to maximise total value.
 
-  Base code and a test case are provided in `exercises/inventory2.py`
+  Base code and a test case are provided in `exercises/inventoryH.py`
+
+  The example solutions provided are not optimal!
 ]
 
 ---
@@ -1108,12 +1174,12 @@ A _getter_ is a function returning a value as a property,
 ```py
 class Person:
     def __init__(self, first_name, last_name):
-      self.first_name = first_name
-      self.last_name = last_name
+        self.first_name = first_name
+        self.last_name = last_name
     
     @property
     def full_name(self):
-      return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
 p = Person("John", "Doe")
 print(p.full_name)
@@ -1187,8 +1253,9 @@ Functional programming is a style of programming that emphasizes use of
 The advantages of such functions is ease of reasoning about the program - there are
   fewer surprises.
 
-Another big part of functional programming is the ability to treat functions
-  as values: so that a function can itself be a parameter to another function.
+Besides function purity, another big part of functional programming
+  is the ability to treat functions as values:
+  so that a function can itself be a parameter to another function.
 
 ---
 

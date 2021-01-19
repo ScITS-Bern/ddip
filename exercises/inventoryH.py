@@ -8,7 +8,7 @@ class Item:
         return f"{self.name} ({self.price} gold) [{self.weight} kg]"
 
 
-class ContainerImmutable:
+class Container:
     def __init__(self, name, weight_limit):
         self.name = name
         self.weight_limit = weight_limit
@@ -28,24 +28,13 @@ class ContainerImmutable:
             raise ValueError("Containers can only contain Items")
         return self.items_weight() + item.weight <= self.weight_limit
 
-    def _add(self, item):
-        # It's a good idea to have the old method as well: we need it internally
+    def add(self, item):
         if self.can_add(item):
             self._counts[item] = self.count(item) + 1
         else:
             raise RuntimeError(f"Can't add {item} to {self}: over weight limit")
 
-    def add(self, item):
-        # Should return a new Container that has the item added, everything else the same
-        # Do not modify self
-
-        # You need a new_container, that has the same items and other properties
-        # Make a new one then add all old items to it
-        # Then add the new item and return the new container
-        pass
-
     def remove(self, item):
-        # This should also be modified, but not part of the exercise
         if self.count(item):
             self._counts[item] = self.count(item) - 1
         else:
@@ -59,17 +48,50 @@ class ContainerImmutable:
                 yield item
 
     def __len__(self):
+        # Implement "len(container)", should return total count of items
         return sum(self.count(item) for item in self._counts)
 
     def __contains__(self, item):
+        # Implement "item in container", should return True/False
         return self.count(item) > 0
 
     def __str__(self):
         return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"
 
+    def loot(self, container):
+        # YOUR CODE HERE
+        pass
 
-inventory = ContainerImmutable("Player inventory", 50)
-new_inventory = inventory.add(Item("Golden crown", 500, 4))
 
-assert len(new_inventory) == 1
-assert len(inventory) == 0
+hoard = Container("Dragon's hoard", 1000)
+hoard.add(Item("Rusty bucket", 0.1, 1))
+hoard.add(Item("Large diamond", 1000, 0.1))
+hoard.add(Item("Huge gold nugget", 10000, 100))
+hoard.add(Item("Plate armor", 300, 25))
+hoard.add(Item("Plate armor", 300, 25))
+hoard.add(Item("Plate armor", 300, 25))
+hoard.add(Item("Mythril chainmail", 600, 10))
+hoard.add(Item("Mythril chainmail", 600, 10))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Golden crown", 500, 4))
+hoard.add(Item("Ornate statue", 700, 40))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of healing", 100, 0.2))
+hoard.add(Item("Potion of strength", 300, 0.4))
+
+inventory = Container("Player inventory", 50)
+inventory.loot(hoard)
+
+print(inventory)
+for item in inventory:
+    print(f"> {item}")
+print(f"Total looted value: {inventory.items_price()} gold")
+# Can you get this over 6000?
