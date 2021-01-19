@@ -39,7 +39,7 @@ class Container:
             raise RuntimeError(f"Can't add {item} to {self}: over weight limit")
 
     def remove(self, item):
-        if self.count(item):
+        if self.count(item) > 0:
             self._counts[item] = self.count(item) - 1
         else:
             raise KeyError(f"Item {item} not found in {self}")
@@ -54,12 +54,12 @@ class Container:
     def __len__(self):
         # Implement "len(container)", should return total count of items
         # Implementation should be similar to items_weight
-        pass
+        return sum(self.count(item) for item in self._counts)
 
     def __contains__(self, item):
         # Implement "item in container", should return True/False
         # An item is "in" the container if its count is greater than zero
-        pass
+        return self.count(item) > 0
 
     def __str__(self):
         return f"{self.name} [{self.items_weight()}/{self.weight_limit} kg]"

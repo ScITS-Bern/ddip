@@ -47,7 +47,7 @@ class ContainerImmutable:
 
     def remove(self, item):
         # This should also be modified, but not part of the exercise
-        if self.count(item):
+        if self.count(item) > 0:
             self._counts[item] = self.count(item) - 1
         else:
             raise KeyError(f"Item {item} not found in {self}")

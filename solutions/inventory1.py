@@ -41,7 +41,7 @@ class Container:
     def remove(self, item):
         # Should remove Item "item" from the Container "self" and return it
         # Raise an error if it's not in the Container
-        if self.count(item):
+        if self.count(item) > 0:
             self._counts[item] = self.count(item) - 1
         else:
             raise KeyError(f"Item {item} not found in {self}")
